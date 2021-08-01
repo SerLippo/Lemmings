@@ -1,4 +1,4 @@
-# README
+# LEMMINGS
 
 ​		Lemmings is a verilog sequential practice from HDLBits. Lemmings can walk, fall and dig, But lemmings aren't invulnerable. If a lemming falls for more than 20 clock cycles then hits the ground, it will splatter and cease walking, falling, or digging.
 
