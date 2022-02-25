@@ -19,17 +19,18 @@ VCOMP			= vlogan \
 						-timescale=1ps/1ps \
 						-l $(OUT)/log/comp_$(TOP).log
 ELAB			= vcs \
-						-cpp g++-4.4 \
-						-cc gcc-4.4 \
+            -CFLAGS '--std=c99 -fno-extended-identifiers' \
+						-LDFLAGS '-Wl,--no-as-needed' \
 						-full64 -sverilog \
 						-ntb_opts uvm-1.2 \
-						-debug_all \
+						-debug_acc+all \
 						-l $(OUT)/log/elab_$(TOP).log \
 						-o $(OUT)/obj/lemmings.simv
 RUN				= $(OUT)/obj/lemmings.simv \
 						+ntb_random_seed=$(SEED) \
 						+UVM_NO_RELNOTES \
-						+UVM_VERBOSITY=$(VERB)
+						+UVM_VERBOSITY=$(VERB) \
+						-ucli -do ./sim.do
 COV_OPTS  	= -full64 -dir $(CM_DIR)
 CM_NAME 	?= $(TEST)_$(SEED)
 CM_DIR		?= $(OUT)/cov.vdb
@@ -72,10 +73,10 @@ comp: .shadow/compile_uvm
 elab: comp
 	$(ELAB) $(TOP)
 
-run: 
+run:
 	$(RUN) +UVM_TESTNAME=$(TEST) -l $(OUT)/sim/$(CM_NAME).log -cm_dir $(CM_DIR) -cm_name $(CM_NAME)
 
-regr: 
+regr:
 	for t in $(TESTLIST); do \
 		$(RUN) +UVM_TESTNAME=$$t -l $(OUT)/sim/$$t.log -cm_dir $(CM_DIR) -cm_name $(CM_NAME) +vpdfile+$(OUT)/sim/$$t_$(SEED)_$(VPDFILE); \
 	done
@@ -95,4 +96,4 @@ clean:
 	-rm -rf eman* vhdl_objs_dir
 	-rm -rf transcript vsim* regr_ucdb* work $(TOP) $(TOP).vdb
 	-rm -rf ._Vera* .synopsys_dve_rebuild.tcl .restartSimSession.tcl.old
-	-rm -rf .vlogansetup* .inter.vpd.uvm
+	-rm -rf .vlogansetup* .inter.vpd.uvm 64
